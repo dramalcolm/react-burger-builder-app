@@ -1,7 +1,9 @@
 import React,{Component} from 'react';
 import Aux from '../../hoc/Aux';
 import Burger from '../../components/burger/burger';
-import BuildControls from '../../components/burger/buildControls/buildControls'
+import BuildControls from '../../components/burger/buildControls/buildControls';
+import Modal from '../../components/UI/Modal/modal';
+import OrderSummary from '../../components/burger/OrderSummary/OrderSummary';
 
 const INGREDIENT_PRICES = {
     salad: 0.5,
@@ -20,6 +22,19 @@ class BurgerBuilder extends Component{
             meat: 0,
         },
         totalPrice: 5,
+        purchasable: false,
+        orderNow: false,
+    }
+
+    updatePurchaseState(Ingredients){
+        const sum = Object.keys(Ingredients)
+            .map(igKey =>{
+                return Ingredients[igKey]
+            })
+            .reduce((sum,el)=>{
+                return sum + el;
+            },0);
+        this.setState({purchasable: sum> 0});    
     }
 
     addIngredientHandler=(type)=>{
@@ -35,6 +50,7 @@ class BurgerBuilder extends Component{
         const newPrice = oldPrice + priceAddition;
 
         this.setState({totalPrice: newPrice,ingredients:updatedIngredients});
+        this.updatePurchaseState(updatedIngredients);
     }
 
     removeIngredientHandler=(type)=>{
@@ -53,11 +69,15 @@ class BurgerBuilder extends Component{
         const newPrice = oldPrice - priceDeduction;
 
         this.setState({totalPrice: newPrice,ingredients:updatedIngredients});
+        this.updatePurchaseState(updatedIngredients);
+    }
+
+    orderNowHandler = () =>{
+        this.setState({orderNow:true});
     }
 
 
     render(){
-
         const disabledInfo = {
             ...this.state.ingredients
         };
@@ -68,12 +88,17 @@ class BurgerBuilder extends Component{
 
         return(
             <Aux>
+                <Modal show={this.state.orderNow}>
+                    <OrderSummary ingredients={this.state.ingredients}/>
+                </Modal>
                 <Burger ingredients={this.state.ingredients}/>
                 <BuildControls 
                     price={this.state.totalPrice}
+                    purchasable={this.state.purchasable}
                     ingredientAdd={this.addIngredientHandler}
                     ingredientRemove={this.removeIngredientHandler}
-                    disabled={disabledInfo}/>
+                    disabled={disabledInfo}
+                    orderNow={this.orderNowHandler}/>
             </Aux>
         );
     }
