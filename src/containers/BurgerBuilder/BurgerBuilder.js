@@ -8,18 +8,11 @@ import axios from '../../axios-order';
 import Spinner from '../../components/UI/Spinner/Spinner';
 import withErrorHandler from '../../hoc/withErrorHandler/withErrorHandler';
 
-const INGREDIENT_PRICES = {
-    salad: 0.5,
-    cheese: 1.0,
-    meat: 1.5,
-    bacon: 1.0,
-}
-
-
 class BurgerBuilder extends Component{
     state = {
         ingredients:null,
-        totalPrice: 5,
+        ingred_cost: null,
+        totalPrice: 4.00,
         purchasable: false,
         orderNow: false,
         loading: false,
@@ -30,10 +23,34 @@ class BurgerBuilder extends Component{
         axios.get('ingredients.json')
                 .then(response=>{
                     this.setState({ingredients: response.data});
+                    this.updateDefaultCost();
                 })
                 .catch(error=>{
                     this.setState({error: true});
                 });
+        axios.get('ingred_cost.json')
+                .then(response=>{
+                    this.setState({ingred_cost: response.data});
+                    this.updateDefaultCost();
+                })
+                .catch(error=>{
+                    this.setState({error: true});
+                });
+    }
+
+    updateDefaultCost(){
+        const defaultPriceQuote = {
+            ...this.state.ingredients
+        };
+        let defaultNewPrice = 0;
+        for(let key in defaultPriceQuote){
+            if(defaultPriceQuote[key] !== 0){
+                defaultNewPrice += this.state.ingred_cost[key];
+            }
+        }
+          
+        this.setState({totalPrice: defaultNewPrice+this.state.totalPrice}); 
+        this.updatePurchaseState(defaultPriceQuote); 
     }
 
     updatePurchaseState(Ingredients){
@@ -55,7 +72,7 @@ class BurgerBuilder extends Component{
         };
         updatedIngredients[type] = updateCount;
 
-        const priceAddition = INGREDIENT_PRICES[type];
+        const priceAddition = this.state.ingred_cost[type];
         const oldPrice = this.state.totalPrice;
         const newPrice = oldPrice + priceAddition;
 
@@ -74,7 +91,7 @@ class BurgerBuilder extends Component{
         };
         updatedIngredients[type] = updateCount;
 
-        const priceDeduction = INGREDIENT_PRICES[type];
+        const priceDeduction = this.state.ingred_cost[type];
         const oldPrice = this.state.totalPrice;
         const newPrice = oldPrice - priceDeduction;
 
@@ -136,7 +153,8 @@ class BurgerBuilder extends Component{
         }
 
         let burger = this.state.error ? <p>Ingredients can't be loaded</p> : <Spinner/>;
-        if(this.state.ingredients){
+        if(this.state.ingredients && this.state.ingred_cost){ 
+
             burger = (
                 <Aux>
                     <Burger ingredients={this.state.ingredients}/>

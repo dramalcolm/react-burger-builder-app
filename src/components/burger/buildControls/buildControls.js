@@ -1,6 +1,6 @@
 import React from 'react';
 import classes from './buildControls.css';
-import BuildControls from './buildControl/buildControl'
+import BuildControl from './buildControl/buildControl'
 
 const controls = [
     {label: 'Salad', type: 'salad'},
@@ -14,7 +14,7 @@ const buildControls = (props) =>{
         <div className={classes.buildControls}>
             <p>Current Price: <strong>{props.price.toFixed(2)}</strong></p>
             {controls.map(ctl => (
-                <BuildControls 
+                <BuildControl 
                     key={ctl.label} 
                     label={ctl.label}
                     added={()=>props.ingredientAdd(ctl.type)}
