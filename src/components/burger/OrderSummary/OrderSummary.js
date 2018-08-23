@@ -1,26 +1,32 @@
-import React from 'react';
-import Aux from '../../../hoc/Aux';
+import React,{Component} from 'react';
+import Aux from '../../../hoc/Aux/Aux';
 import Button from '../../UI/Button/button';
 
-const orderSummary = (props) =>{
-    const ingredSummary = Object.keys(props.ingredients)
-                                .map(igKey =>{
-                                    return <li key={igKey}><span style={{textTransform:'capitalize'}}>{igKey}</span>: {props.ingredients[igKey]}</li>
-                                });
+class OrderSummary extends Component{
 
-    return (
-        <Aux>
-            <h3>Your Order</h3>
-            <p>A Delicius burger with the following ingredient:</p>
-            <ul>
-                {ingredSummary}
-            </ul>
-            <p><strong>Total Price: {props.totalprice.toFixed(2)}</strong></p>
-            <p>Continue to checkout?</p>
-            <Button btntype='Danger' clicked={props.puchaseCancel}>CANCEL</Button>
-            <Button btntype='Success' clicked={props.puchaseContinue}>CONTINUE</Button>
-        </Aux>
-    );
-};
+    render(){
 
-export default orderSummary;
+        const ingredSummary = Object.keys(this.props.ingredients)
+        .map(igKey =>{
+            return <li key={igKey}>
+                        <span style={{textTransform:'capitalize'}}>{igKey}</span>: 
+                        {this.props.ingredients[igKey]}</li>
+        });
+
+        return (
+            <Aux>
+                <h3>Your Order</h3>
+                <p>A Delicius burger with the following ingredient:</p>
+                <ul>
+                    {ingredSummary}
+                </ul>
+                <p><strong>Total Price: {this.props.totalprice.toFixed(2)}</strong></p>
+                <p>Continue to checkout?</p>
+                <Button btntype='Danger' clicked={this.props.puchaseCancel}>CANCEL</Button>
+                <Button btntype='Success' clicked={this.props.puchaseContinue}>CONTINUE</Button>
+            </Aux>
+        );
+    }
+}
+
+export default OrderSummary;
