@@ -23,19 +23,22 @@ class BurgerBuilder extends Component{
         axios.get('ingredients.json')
                 .then(response=>{
                     this.setState({ingredients: response.data});
-                    this.updateDefaultCost();
+                    
+                    //Get Ingredients Prices            
+                    axios.get('ingred_cost.json')
+                    .then(response=>{
+                        this.setState({ingred_cost: response.data});
+                        this.updateDefaultCost();
+                    })
+                    .catch(error=>{
+                        this.setState({error: true});
+                    });
+
                 })
                 .catch(error=>{
                     this.setState({error: true});
                 });
-        axios.get('ingred_cost.json')
-                .then(response=>{
-                    this.setState({ingred_cost: response.data});
-                    this.updateDefaultCost();
-                })
-                .catch(error=>{
-                    this.setState({error: true});
-                });
+        
     }
 
     updateDefaultCost(){
