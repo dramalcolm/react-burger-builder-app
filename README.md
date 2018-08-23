@@ -1,5 +1,9 @@
 This project was bootstrapped with [Create React App](https://github.com/facebookincubator/create-react-app).
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> ed8ab3aa2fa1728ab731ad354ec77f134eb3d187
 ## Updating to New Releases
 
 Create React App is divided into two packages:
