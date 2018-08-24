@@ -19,5 +19,4 @@ class CheckOut extends Component{
     }
 
 }
-
 export default CheckOut;
