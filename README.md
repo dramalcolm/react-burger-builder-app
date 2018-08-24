@@ -1,11 +1,10 @@
 ## Burger Builder Application
 
 App Description
-This is a basic Burger Builder Application with ReactJS. It includes React's component architecture and layout standard. This is how we can use it dynamically and mobile responsive approach.
+This is a basic Burger Builder Application with ReactJS as the front-end and firebase as the backend DB
 
 This project was bootstrapped with [Create React App](https://github.com/facebookincubator/create-react-app).
 
-### `create-react-app`
 
 ## What was used?
 - HTML5
