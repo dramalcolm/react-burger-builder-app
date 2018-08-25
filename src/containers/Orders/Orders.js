@@ -32,8 +32,8 @@ class Orders extends Component{
 
 
         //console.log(this.state.orders);
-
-        let orders = '';
+        
+        //let orders = '';
         /*
         let trans_ingredients = Object.keys(this.state.orders)
         .map(igKey => {
@@ -54,10 +54,10 @@ class Orders extends Component{
             ingredients={trans_ingredients[igkey]['in']} 
             price={trans_ingredients[igkey]['price']}/>
         });
-*/
-        if(this.state.loading){
-            orders = <Spinner/>;
-        }
+        */
+        //if(this.state.loading){
+            //orders = <Spinner/>;
+        //}
 
         return(
             <div>

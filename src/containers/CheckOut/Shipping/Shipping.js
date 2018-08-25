@@ -4,21 +4,78 @@ import classes from './Shipping.css';
 import axios from '../../../axios-order';
 import Spinner from '../../../components/UI/Spinner/Spinner';
 import Aux from '../../../hoc/Aux/Aux';
+import Input from '../../../components/UI/Input/Input';
 
 class Shipping extends Component{
     state = {
         ingredients: [],
-        customer:{
-            name: '',
-            tel: '',
-            address: {
-                street: '',
-                state: '',
-                zipCode: '',
-                country: ''
+        orderForm:{
+            name: {
+                elementType: 'input', 
+                elementConfig:{
+                    type:'text',
+                    placeholder: 'Your Name'
+                },
+                value: ''
             },
-            email: '',
-            deliveryMethod: '',
+            email: {
+                elementType: 'input', 
+                elementConfig:{
+                    type:'email',
+                    placeholder: 'Your Email'
+                },
+                value: ''
+            },
+            tel: {
+                elementType: 'input', 
+                elementConfig:{
+                    type:'telephone',
+                    placeholder: 'Telephone Number'
+                },
+                value: ''
+            },
+            street: {
+                elementType: 'input', 
+                elementConfig:{
+                    type:'text',
+                    placeholder: '124 Test Street Apt 1245'
+                },
+                value: ''
+            },
+            state: {
+                elementType: 'input', 
+                elementConfig:{
+                    type:'text',
+                    placeholder: 'State'
+                },
+                value: ''
+            },
+            zipCode: {
+                elementType: 'input', 
+                elementConfig:{
+                    type:'number',
+                    placeholder: 'ZipCode'
+                },
+                value: ''
+            },
+            country: {
+                elementType: 'input', 
+                elementConfig:{
+                    type:'text',
+                    placeholder: 'Your Country'
+                },
+                value: ''
+            },
+            deliveryMethod: {
+                elementType: 'select', 
+                elementConfig:{
+                    options: [
+                        {value: 'fastest', displayValue: 'Fastest'},
+                        {value: 'normal', displayValue: 'Normal'},
+                    ]
+                },
+                value: ''
+            },
         },
         loading: false,
     }
@@ -27,24 +84,32 @@ class Shipping extends Component{
         //console.log(this.props);
     }
 
-    placeOrderHandler= () => {
-        //alert('clicked');
+    inputChangeHandler = (event,inputIdentifier) =>{
+        const updatedOrderForm = {
+            ...this.state.orderForm
+        }
+        const updateFormElement = {
+            ...updatedOrderForm[inputIdentifier]
+        }
+
+        updateFormElement.value = event.target.value;
+        updatedOrderForm[inputIdentifier] = updateFormElement;
+        this.setState({orderForm:updatedOrderForm});
+    }
+
+    placeOrderHandler= (event) => {
+        event.preventDefault();
         this.setState({loading:true});
+
+        const formData = {};
+        for(let formElementIdentifier in this.state.orderForm){
+            formData[formElementIdentifier] = this.state.orderForm[formElementIdentifier].value;
+        }
+
         const order = {
             ingredients: this.props.ingredients,
             price: this.props.price, //not a setup to using in production, should calculate on backend
-            customer:{
-                name: 'Douglas Malcolm',
-                tel: '(876) 555-555',
-                address: {
-                    street: '124 Test Street Apt 1245',
-                    state: 'New Test',
-                    zipCode: '00000',
-                    country: 'Jamaica'
-                },
-                email: 'test@test.com',
-                deliveryMethod: 'fastest',
-            }
+            customer: formData,
         }
     
         axios.post('/orders.json',order)
@@ -61,18 +126,31 @@ class Shipping extends Component{
     }
 
     render(){
+
+        const formElementArray = [];
+        for(let key in this.state.orderForm){
+            formElementArray.push({
+                id: key,
+                config: this.state.orderForm[key]
+            });
+        }
+
+        //console.log(formElementArray);
+
+
         let form = <Aux>
-            <form>
+            <form onSubmit={this.placeOrderHandler}>
                 <h4>Enter Shipping Information</h4>
-                <input type="text" name="name" placeholder="Your Name" />
-                <input type="text" name="email" placeholder="Your Email" />
-                <input type="text" name="telephone" placeholder="Your Telephone" />
-                <input type="text" name="street" placeholder="Your Street" />
-                <input type="text" name="state" placeholder="Your State" />
-                <input type="text" name="zipcode" placeholder="Your Zipcode" />
-                <input type="text" name="country" placeholder="Your Country" />
-                <input type="text" name="deliveryMethod" placeholder="Delivery Option" />
-                <Button btntype="Success" clicked={this.placeOrderHandler}>ORDER</Button>
+                
+                {formElementArray.map(element=>(
+                    <Input 
+                        key={element.id}
+                        elementType={element.config.elementType} 
+                        elementConfig={element.config.elementConfig}
+                        value={element.config.value} 
+                        changed={(event)=>this.inputChangeHandler(event,element.id)}/>
+                ))}
+                <Button btntype="Success" >ORDER</Button>
             </form>
         </Aux>;
 
