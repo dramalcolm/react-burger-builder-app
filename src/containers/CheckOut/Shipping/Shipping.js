@@ -6,9 +6,10 @@ import Spinner from '../../../components/UI/Spinner/Spinner';
 import Aux from '../../../hoc/Aux/Aux';
 import Input from '../../../components/UI/Input/Input';
 
+import {connect} from 'react-redux';
+
 class Shipping extends Component{
     state = {
-        ingredients: [],
         orderForm:{
             name: {
                 elementType: 'input', 
@@ -169,14 +170,13 @@ class Shipping extends Component{
         event.preventDefault();
         this.setState({loading:true});
 
-
         const formData = {};
         for(let formElementIdentifier in this.state.orderForm){
             formData[formElementIdentifier] = this.state.orderForm[formElementIdentifier].value;
         }
 
         const order = {
-            ingredients: this.props.ingredients,
+            ingredients: this.props.ings,
             price: this.props.price, //not a setup to using in production, should calculate on backend
             customer: formData,
         }
@@ -203,9 +203,6 @@ class Shipping extends Component{
                 config: this.state.orderForm[key]
             });
         }
-
-        
-
 
         let form = <Aux>
             <form onSubmit={this.placeOrderHandler}>
@@ -238,4 +235,12 @@ class Shipping extends Component{
     }
 }
 
-export default Shipping;
+const mapStateToProps = state => {
+    return{
+        ings: state.ingredients,
+        price: state.totalPrice,
+    }
+}
+
+
+export default connect(mapStateToProps)(Shipping);
