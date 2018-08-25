@@ -22,6 +22,7 @@ class Shipping extends Component{
                     minLength: 6,
                 },
                 valid: false,
+                touched: false,
             },
             email: {
                 elementType: 'input', 
@@ -35,6 +36,7 @@ class Shipping extends Component{
                     minLength: 6,
                 },
                 valid: false,
+                touched: false,
             },
             tel: {
                 elementType: 'input', 
@@ -48,6 +50,7 @@ class Shipping extends Component{
                     minLength: 6,
                 },
                 valid: false,
+                touched: false,
             },
             street: {
                 elementType: 'input', 
@@ -61,6 +64,7 @@ class Shipping extends Component{
                     minLength: 10,
                 },
                 valid: false,
+                touched: false,
             },
             state: {
                 elementType: 'input', 
@@ -74,6 +78,7 @@ class Shipping extends Component{
                     minLength: 6,
                 },
                 valid: false,
+                touched: false,
             },
             zipCode: {
                 elementType: 'input', 
@@ -88,6 +93,7 @@ class Shipping extends Component{
                     maxLength: 5,
                 },
                 valid: false,
+                touched: false,
             },
             country: {
                 elementType: 'input', 
@@ -100,6 +106,7 @@ class Shipping extends Component{
                     required: true,
                 },
                 valid: false,
+                touched: false,
             },
             deliveryMethod: {
                 elementType: 'select', 
@@ -109,9 +116,13 @@ class Shipping extends Component{
                         {value: 'normal', displayValue: 'Normal'},
                     ]
                 },
-                value: ''
+                value: 'fastest',
+                validation:{
+                },
+                valid: true,
             },
         },
+        formIsValid: false,
         loading: false,
     }
 
@@ -144,14 +155,20 @@ class Shipping extends Component{
         updateFormElement.value = event.target.value;
         //Validating Form
         updateFormElement.valid = this.checkValidation(updateFormElement.value,updateFormElement.validation);
+        updateFormElement.touched = true;
         updatedOrderForm[inputIdentifier] = updateFormElement;
-        console.log(updateFormElement);
-        this.setState({orderForm:updatedOrderForm});
+        
+        let formIsValid = true;
+        for(let inputIdent in updatedOrderForm){
+            formIsValid = updatedOrderForm[inputIdent].valid && formIsValid;
+        }
+        this.setState({orderForm:updatedOrderForm,formIsValid: formIsValid});
     }
 
     placeOrderHandler= (event) => {
         event.preventDefault();
         this.setState({loading:true});
+
 
         const formData = {};
         for(let formElementIdentifier in this.state.orderForm){
@@ -187,7 +204,7 @@ class Shipping extends Component{
             });
         }
 
-        //console.log(formElementArray);
+        
 
 
         let form = <Aux>
@@ -199,10 +216,13 @@ class Shipping extends Component{
                         key={element.id}
                         elementType={element.config.elementType} 
                         elementConfig={element.config.elementConfig}
-                        value={element.config.value} 
+                        value={element.config.value}
+                        invalid={!element.config.valid}
+                        shouldValidate={element.config.validation}
+                        touched={element.config.touched} 
                         changed={(event)=>this.inputChangeHandler(event,element.id)}/>
                 ))}
-                <Button btntype="Success" >ORDER</Button>
+                <Button btntype="Success" disabled={!this.state.formIsValid}>ORDER</Button>
             </form>
         </Aux>;
 
