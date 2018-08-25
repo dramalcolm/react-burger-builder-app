@@ -16,7 +16,12 @@ class Shipping extends Component{
                     type:'text',
                     placeholder: 'Your Name'
                 },
-                value: ''
+                value: '',
+                validation:{
+                    required: true,
+                    minLength: 6,
+                },
+                valid: false,
             },
             email: {
                 elementType: 'input', 
@@ -24,7 +29,12 @@ class Shipping extends Component{
                     type:'email',
                     placeholder: 'Your Email'
                 },
-                value: ''
+                value: '',
+                validation:{
+                    required: true,
+                    minLength: 6,
+                },
+                valid: false,
             },
             tel: {
                 elementType: 'input', 
@@ -32,7 +42,12 @@ class Shipping extends Component{
                     type:'telephone',
                     placeholder: 'Telephone Number'
                 },
-                value: ''
+                value: '',
+                validation:{
+                    required: true,
+                    minLength: 6,
+                },
+                valid: false,
             },
             street: {
                 elementType: 'input', 
@@ -40,7 +55,12 @@ class Shipping extends Component{
                     type:'text',
                     placeholder: '124 Test Street Apt 1245'
                 },
-                value: ''
+                value: '',
+                validation:{
+                    required: true,
+                    minLength: 10,
+                },
+                valid: false,
             },
             state: {
                 elementType: 'input', 
@@ -48,7 +68,12 @@ class Shipping extends Component{
                     type:'text',
                     placeholder: 'State'
                 },
-                value: ''
+                value: '',
+                validation:{
+                    required: true,
+                    minLength: 6,
+                },
+                valid: false,
             },
             zipCode: {
                 elementType: 'input', 
@@ -56,7 +81,13 @@ class Shipping extends Component{
                     type:'number',
                     placeholder: 'ZipCode'
                 },
-                value: ''
+                value: '',
+                validation:{
+                    required: true,
+                    minLength: 5,
+                    maxLength: 5,
+                },
+                valid: false,
             },
             country: {
                 elementType: 'input', 
@@ -64,7 +95,11 @@ class Shipping extends Component{
                     type:'text',
                     placeholder: 'Your Country'
                 },
-                value: ''
+                value: '',
+                validation:{
+                    required: true,
+                },
+                valid: false,
             },
             deliveryMethod: {
                 elementType: 'select', 
@@ -80,8 +115,21 @@ class Shipping extends Component{
         loading: false,
     }
 
-    componentDidMount(){
-        //console.log(this.props);
+    checkValidation(value,rules){
+       let isValid = true;
+       if(rules.required){
+            isValid = value.trim() !== '' && isValid
+       }
+
+       if(rules.minLength){
+            isValid = value.length >= rules.minLength && isValid
+       }
+
+       if(rules.maxLength){
+        isValid = value.length <= rules.maxLength && isValid
+       }
+
+       return isValid;
     }
 
     inputChangeHandler = (event,inputIdentifier) =>{
@@ -92,8 +140,12 @@ class Shipping extends Component{
             ...updatedOrderForm[inputIdentifier]
         }
 
+        //Saving Value Entered
         updateFormElement.value = event.target.value;
+        //Validating Form
+        updateFormElement.valid = this.checkValidation(updateFormElement.value,updateFormElement.validation);
         updatedOrderForm[inputIdentifier] = updateFormElement;
+        console.log(updateFormElement);
         this.setState({orderForm:updatedOrderForm});
     }
 
