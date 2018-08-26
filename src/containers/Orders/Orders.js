@@ -3,6 +3,9 @@ import Order from '../../components/Order/Order';
 import axios from '../../axios-order';
 //import Spinner from '../../components/UI/Spinner/Spinner';
 import withErrorHandler from '../../hoc/withErrorHandler/withErrorHandler';
+import * as actions from '../../store/actions/index';
+import {connect} from 'react-redux';
+import Spinner from '../../components/UI/Spinner/Spinner';
 
 class Orders extends Component{
 
@@ -12,35 +15,41 @@ class Orders extends Component{
     }
 
     componentDidMount(){
-        axios.get('/orders.json')
-            .then(response => {
-                const fetechOrders = [];
-                for(let key in response.data){
-                    fetechOrders.push({
-                            ...response.data[key],
-                            id: key
-                        });
-                }
-                this.setState({loading:false,orders:fetechOrders});
-            })
-            .catch(error =>{
-                this.setState({loading:false});
-            });
+        this.props.onFetchOrders();
     }
 
     render(){
 
-        return(
-            <div>
-                {this.state.orders.map(order => (
+        let orders = <Spinner/>
+
+        if(!this.props.loading){
+            orders = this.props.orders.map(order => (
                     <Order 
                         key={order.id} 
                         ingredients={order.ingredients}
                         price={order.price}/> 
-                ))}
+                )
+            );
+        }
+
+        return(
+            <div>
+                {orders}
             </div>
         );
     }
 }
 
-export default withErrorHandler(Orders,axios);
+const mapStateToProps = state =>{
+    return{
+        orders: state.order.orders,
+        loading: state.order.loading
+    };
+};
+
+const mapDispatchToProps = dispatch => {
+    return{
+        onFetchOrders: ()=>dispatch(actions.fetchOrders())
+    };
+};
+export default connect(mapStateToProps,mapDispatchToProps)(withErrorHandler(Orders,axios));
