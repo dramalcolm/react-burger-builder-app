@@ -8,25 +8,32 @@ const InitialState = {
     error: false,
 };
 
-const reducer = (state=InitialState, action) =>{
+const addIngredient = (state, action) =>{
+    const updatedIngredient = {[action.IngredientName]: state.ingredients[action.IngredientName] + 1}
+    const updatedIngredients = updateObject(state.ingredients,updatedIngredient);
+    const updateState = {
+        ingredients: updatedIngredients,
+        totalPrice: state.totalPrice + state.ingred_cost[action.IngredientName]
+    }
+    return updateObject(state,updateState);
+};
 
+const removeIngredient = (state, action) =>{
+    const updatedIng= {[action.IngredientName]: state.ingredients[action.IngredientName] - 1}
+    const updatedIngs = updateObject(state.ingredients,updatedIng);
+    const updateStat = {
+        ingredients: updatedIngs,
+        totalPrice: state.totalPrice - state.ingred_cost[action.IngredientName]
+    }
+    return updateObject(state,updateStat);
+}
+
+const reducer = (state=InitialState, action) =>{
     switch(action.type){
         case actionTypes.ADD_INGREDIENT:
-            const updatedIngredient = {[action.IngredientName]: state.ingredients[action.IngredientName] + 1}
-            const updatedIngredients = updateObject(state.ingredients,updatedIngredient);
-            const updateState = {
-                ingredients: updatedIngredients,
-                totalPrice: state.totalPrice + state.ingred_cost[action.IngredientName]
-            }
-            return updateObject(state,updateState);
+            return addIngredient(state,action);
         case actionTypes.REMOVE_INGREDIENT:
-            const updatedIng= {[action.IngredientName]: state.ingredients[action.IngredientName] - 1}
-            const updatedIngs = updateObject(state.ingredients,updatedIng);
-            const updateStat = {
-                ingredients: updatedIngs,
-                totalPrice: state.totalPrice - state.ingred_cost[action.IngredientName]
-            }
-            return updateObject(state,updateStat);
+            return removeIngredient(state,action);
         case actionTypes.SET_INGREDIENTS:
             return updateObject(state,{ingredients: action.ingredients,totalPrice: 4, error: false});
         case actionTypes.FETCH_INGREDIENTS_FAIL:
@@ -37,4 +44,5 @@ const reducer = (state=InitialState, action) =>{
             return state;
     }
 }
+
 export default reducer;
