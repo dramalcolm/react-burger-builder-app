@@ -194,7 +194,7 @@ class Shipping extends Component{
             customer: formData,
         }
 
-        this.props.onOrderBuger(order);
+        this.props.onOrderBuger(order,this.props.token);
 
     }
 
@@ -243,13 +243,14 @@ const mapStateToProps = state => {
     return{
         ings: state.burgerBuilder.ingredients,
         price: state.burgerBuilder.totalPrice,
-        loading: state.order.loading
+        loading: state.order.loading,
+        token: state.auth.token //from auth reducer
     }
 }
 
 const mapDispatchToProps = dispatch => {
     return{
-        onOrderBuger: (orderData)=>dispatch(burgerBuilderActions.purchaseBurger(orderData))
+        onOrderBuger: (orderData,token)=>dispatch(burgerBuilderActions.purchaseBurger(orderData,token))
     }
 }
 
