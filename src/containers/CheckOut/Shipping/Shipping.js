@@ -7,6 +7,8 @@ import Aux from '../../../hoc/Aux/Aux';
 import Input from '../../../components/UI/Input/Input';
 
 import {connect} from 'react-redux';
+import withErrorHandler from '../../../hoc/withErrorHandler/withErrorHandler';
+import * as burgerBuilderActions from '../../../store/actions/index';
 
 class Shipping extends Component{
     state = {
@@ -125,7 +127,6 @@ class Shipping extends Component{
             },
         },
         formIsValid: false,
-        loading: false,
     }
 
     checkValidation(value,rules){
@@ -180,7 +181,7 @@ class Shipping extends Component{
 
     placeOrderHandler= (event) => {
         event.preventDefault();
-        this.setState({loading:true});
+        //this.setState({loading:true});
 
         const formData = {};
         for(let formElementIdentifier in this.state.orderForm){
@@ -192,18 +193,9 @@ class Shipping extends Component{
             price: this.props.price, //not a setup to using in production, should calculate on backend
             customer: formData,
         }
-    
-        axios.post('/orders.json',order)
-            .then(response => {
-                console.log(response);
-                this.setState({loading:false});
-                this.props.history.push('/');
-            })
-            .catch(error =>{
-                this.setState({loading:false});
-                console.log(error);
-            });
-        
+
+        this.props.onOrderBuger(order);
+
     }
 
     render(){
@@ -235,7 +227,7 @@ class Shipping extends Component{
             </form>
         </Aux>;
 
-        if(this.state.loading){
+        if(this.props.loading){
             form = <Spinner/>;
         }
 
@@ -249,10 +241,17 @@ class Shipping extends Component{
 
 const mapStateToProps = state => {
     return{
-        ings: state.ingredients,
-        price: state.totalPrice,
+        ings: state.burgerBuilder.ingredients,
+        price: state.burgerBuilder.totalPrice,
+        loading: state.order.loading
+    }
+}
+
+const mapDispatchToProps = dispatch => {
+    return{
+        onOrderBuger: (orderData)=>dispatch(burgerBuilderActions.purchaseBurger(orderData))
     }
 }
 
 
-export default connect(mapStateToProps)(Shipping);
+export default connect(mapStateToProps,mapDispatchToProps)(withErrorHandler(Shipping, axios));
