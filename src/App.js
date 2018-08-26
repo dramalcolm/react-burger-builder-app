@@ -7,6 +7,7 @@ import CheckOut from './containers/CheckOut/CheckOut';
 import asyncComponent from './hoc/Async/Async';
 //import Shipping from './containers/CheckOut/Shipping/Shipping';
 import Orders from './containers/Orders/Orders';
+import Auth from './containers/Auth/Auth';
 
 const AsyncNewPost = asyncComponent(()=> {
     return import('./containers/BurgerBuilder/BurgerBuilder');
@@ -23,6 +24,7 @@ class App extends Component {
               <Route path='/burger-builder' component={AsyncNewPost}/>
               <Route path='/checkout' component={CheckOut}/>
               <Route path='/orders' component={Orders}/>
+              <Route path='/auth' component={Auth}/>
               {/*<Route component={ErrorPage} />*/}
             </Switch>
           </Layout>
