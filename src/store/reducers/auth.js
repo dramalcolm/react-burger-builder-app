@@ -6,7 +6,8 @@ const InitialState = {
     token: null,
     userId: null,
     error: null,
-    loading: false
+    loading: false,
+    authRedirectPath: '/burger-builder'
 }
 
 const reducer = (state=InitialState,action)=>{
@@ -19,6 +20,8 @@ const reducer = (state=InitialState,action)=>{
             return updateObject(state,{loading: false,error: action.error});
         case actionTypes.AUTH_LOGOUT:
             return updateObject(state,{token: null, userId: null});
+        case actionTypes.SET_AUTH_REDIRECT:
+            return updateObject(state,{authRedirectPath: action.path});   
         default: return state;
     }
 }

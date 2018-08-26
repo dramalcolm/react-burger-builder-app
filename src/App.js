@@ -8,6 +8,7 @@ import asyncComponent from './hoc/Async/Async';
 //import Shipping from './containers/CheckOut/Shipping/Shipping';
 import Orders from './containers/Orders/Orders';
 import Auth from './containers/Auth/Auth';
+import Logout from './containers/Auth/Logout/Logout';
 
 const AsyncNewPost = asyncComponent(()=> {
     return import('./containers/BurgerBuilder/BurgerBuilder');
@@ -25,6 +26,7 @@ class App extends Component {
               <Route path='/checkout' component={CheckOut}/>
               <Route path='/orders' component={Orders}/>
               <Route path='/auth' component={Auth}/>
+              <Route path='/logout' component={Logout}/>
               {/*<Route component={ErrorPage} />*/}
             </Switch>
           </Layout>
