@@ -8,6 +8,14 @@ export const authStart = () =>{
 };
 
 export const authSuccess = (authData) =>{
+
+    //Calculating expiration date
+    const expirationDate = new Date(new Date().getTime() + (authData.expiresIn * 1000))
+    //Accessing Local Storage of the browser and adding values 
+    localStorage.setItem('token',authData.idToken);
+    localStorage.setItem('userId',authData.localId);
+    localStorage.setItem('expirationDate',expirationDate); //When it expires
+
     return{
         type: actionTypes.AUTH_SUCCESS,
         idToken: authData.idToken,
@@ -31,6 +39,11 @@ export const checkAuthTimeout = (expirationTime)=>{
 }
 
 export const logout = () =>{
+
+    //Accessing Local Storage of the browser and remove values saved
+    localStorage.removeItem('token');
+    localStorage.removeItem('expirationDate'); 
+    localStorage.removeItem('userId');
     return{
         type: actionTypes.AUTH_LOGOUT,
     };
@@ -61,6 +74,7 @@ export const auth =(email, password, isSignUp)=>{
 
         axios.post(url,authData)
             .then(response=>{
+                console.log(response.data);
                 dispatch(authSuccess(response.data))
                 dispatch(checkAuthTimeout(response.data.expiresIn))
             })
@@ -69,6 +83,25 @@ export const auth =(email, password, isSignUp)=>{
                 dispatch(authFailed(error.response.data.error.message));
             });
         
+    };
+};
+
+export const authCheckState=()=>{
+    return dispatch =>{
+       const token = localStorage.getItem('token'); 
+       if(!token){
+           dispatch(logout());
+       }else{
+            const expirationDate = new Date(localStorage.getItem('expirationDate')); 
+            const UserId = localStorage.getItem('userId'); 
+            if(expirationDate > new Date()){
+                const exp = (expirationDate.getTime() - new Date().getTime())/1000;
+                dispatch(authSuccess({idToken: token,localId:UserId,expiresIn:exp}));
+                dispatch(checkAuthTimeout(exp));
+            }else{
+                dispatch(logout());
+            }  
+       }
     };
 };
 
