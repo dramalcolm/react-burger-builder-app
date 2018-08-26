@@ -1,4 +1,5 @@
 import * as actionTypes from '../actions/actionTypes';
+import updateObject from '../utility';
 
 const InitialState = {
     ingredients: null,
@@ -11,41 +12,27 @@ const reducer = (state=InitialState, action) =>{
 
     switch(action.type){
         case actionTypes.ADD_INGREDIENT:
-            return{
-                ...state,
-                ingredients: {
-                    ...state.ingredients,
-                    [action.IngredientName]: state.ingredients[action.IngredientName] + 1
-                },
+            const updatedIngredient = {[action.IngredientName]: state.ingredients[action.IngredientName] + 1}
+            const updatedIngredients = updateObject(state.ingredients,updatedIngredient);
+            const updateState = {
+                ingredients: updatedIngredients,
                 totalPrice: state.totalPrice + state.ingred_cost[action.IngredientName]
             }
+            return updateObject(state,updateState);
         case actionTypes.REMOVE_INGREDIENT:
-            return{
-                ...state,
-                ingredients: {
-                    ...state.ingredients,
-                    [action.IngredientName]: state.ingredients[action.IngredientName] - 1
-                },
+            const updatedIng= {[action.IngredientName]: state.ingredients[action.IngredientName] - 1}
+            const updatedIngs = updateObject(state.ingredients,updatedIng);
+            const updateStat = {
+                ingredients: updatedIngs,
                 totalPrice: state.totalPrice - state.ingred_cost[action.IngredientName]
             }
+            return updateObject(state,updateStat);
         case actionTypes.SET_INGREDIENTS:
-            return{
-                ...state,
-                ingredients: action.ingredients,
-                totalPrice: 4, //get total from database
-                error: false,
-            }
+            return updateObject(state,{ingredients: action.ingredients,totalPrice: 4, error: false});
         case actionTypes.FETCH_INGREDIENTS_FAIL:
-            return{
-                ...state,
-                error: true,
-            }
+            return updateObject(state,{error: true});
         case actionTypes.SET_INGREDIENTS_COST:
-            return{
-                ...state,
-                ingred_cost: action.ingred_cost,
-                error: false,
-            }            
+            return updateObject(state,{ingred_cost: action.ingred_cost,error: false,});          
         default:
             return state;
     }
