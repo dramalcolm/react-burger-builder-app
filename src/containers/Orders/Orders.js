@@ -1,8 +1,11 @@
 import React,{ Component } from 'react';
 import Order from '../../components/Order/Order';
 import axios from '../../axios-order';
-import Spinner from '../../components/UI/Spinner/Spinner';
+//import Spinner from '../../components/UI/Spinner/Spinner';
 import withErrorHandler from '../../hoc/withErrorHandler/withErrorHandler';
+import * as actions from '../../store/actions/index';
+import {connect} from 'react-redux';
+import Spinner from '../../components/UI/Spinner/Spinner';
 
 class Orders extends Component{
 
@@ -12,64 +15,42 @@ class Orders extends Component{
     }
 
     componentDidMount(){
-        axios.get('/orders.json')
-            .then(response => {
-                const fetechOrders = [];
-                for(let key in response.data){
-                    fetechOrders.push({
-                            ...response.data[key],
-                            id: key
-                        });
-                }
-                this.setState({loading:false,orders:fetechOrders});
-            })
-            .catch(error =>{
-                this.setState({loading:false});
-            });
+        this.props.onFetchOrders(this.props.token);
     }
 
     render(){
 
+        let orders = <Spinner/>
 
-        //console.log(this.state.orders);
-        
-        //let orders = '';
-        /*
-        let trans_ingredients = Object.keys(this.state.orders)
-        .map(igKey => {
-            return (
-                {
-                    in: this.state.orders[igKey]['ingredients'],
-                    price: this.state.orders[igKey]['price']
-                }
-            );
-        }).reduce((arr,el)=>{
-            return arr.concat(el)
-        },[]);
-        
-
-        let orders = Object.keys(trans_ingredients).map(igkey=>{
-            return <Order 
-            key={igkey} 
-            ingredients={trans_ingredients[igkey]['in']} 
-            price={trans_ingredients[igkey]['price']}/>
-        });
-        */
-        //if(this.state.loading){
-            //orders = <Spinner/>;
-        //}
-
-        return(
-            <div>
-                {this.state.orders.map(order => (
+        if(!this.props.loading){
+            orders = this.props.orders.map(order => (
                     <Order 
                         key={order.id} 
                         ingredients={order.ingredients}
                         price={order.price}/> 
-                ))}
+                )
+            );
+        }
+
+        return(
+            <div>
+                {orders}
             </div>
         );
     }
 }
 
-export default withErrorHandler(Orders,axios);
+const mapStateToProps = state =>{
+    return{
+        orders: state.order.orders,
+        loading: state.order.loading,
+        token: state.auth.token //from auth reducer
+    };
+};
+
+const mapDispatchToProps = dispatch => {
+    return{
+        onFetchOrders: (token)=>dispatch(actions.fetchOrders(token))
+    };
+};
+export default connect(mapStateToProps,mapDispatchToProps)(withErrorHandler(Orders,axios));
